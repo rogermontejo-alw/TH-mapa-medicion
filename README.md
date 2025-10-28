@@ -6,7 +6,7 @@ Este proyecto es una herramienta web interactiva para calcular el área de techo
 
 ## ✅ Cómo acceder
 Puedes ver la herramienta en línea en el siguiente enlace:  
-**https://rogemontejo-alw.github.io/TH-mapa-medicion/**
+**[https://rogemontejo-alw.github.io/TH-mapa-medicion/](https://rogermontejo-alw.github.io/TH-mapa-medicion/)**
 
 ---
 
