@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Área de Techos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores */
+            --color-primary: #F25116;
+            --color-primary-light: #F2916D;
+            --color-primary-bg: #FFF0ED;
+            --color-primary-border: #FFD4C9;
+            
+            --color-text-primary: #404040;
+            --color-text-secondary: #8C8C8C;
+            --color-text-light: #BDBDBD;
+            
+            --color-bg-primary: #FAFAFA;
+            --color-bg-secondary: #FFFFFF;
+            --color-border: #E0E0E0;
+            --color-border-light: #F0F0F0;
+            
+            /* Fuentes */
+            --font-primary: 'Poppins', sans-serif;
+            --font-heading: 'Poppins', sans-serif;
+            
+            /* Tamaños de fuente */
+            --font-size-xl: 28px;
+            --font-size-lg: 24px;
+            --font-size-md: 22px;
+            --font-size-base: 15px;
+            --font-size-sm: 14px;
+            --font-size-xs: 13px;
+            --font-size-xxs: 12px;
+            
+            /* Espaciados */
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 15px;
+            --spacing-lg: 20px;
+            --spacing-xl: 25px;
+            
+            /* Bordes redondeados */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-full: 50%;
+            
+            /* Sombras */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
+            --shadow-primary: 0 2px 8px rgba(242, 81, 22, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--color-bg-primary);
+        }
+        
+        #header {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        h1 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: var(--font-size-md);
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        #searchContainer {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        #addressInput {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--color-text-primary);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+            background: var(--color-bg-primary);
+        }
+        
+        #addressInput:focus {
+            outline:none;
+            border-color: var(--color-primary);
+            background: var(--color-border);
+        }
+        
+        #searchBtn {
+            padding: 14px 24px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        #searchBtn:hover {
+            background: var(--color-primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(242, 81, 22, 0.25);
+        }
+        
+        #instructions {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Indicador de punto arrastrable */
+        .gm-style .gm-style-iw-c {
+            background: var(--color-primary);
+        }
+        
+        /* Cursor personalizado para marcadores */
+        .gm-style img[src*="spotlight"] {
+            cursor: move !important;
+        }
+        
+        .gm-style div[role="button"] {
+            cursor: move !important;
+        }
+        
+        #statusBar {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-md) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+        
+        #result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+        
+        #area {
+            color: var(--color-primary);
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            font-family: var(--font-heading);
+        }
+        
+        .info-badge {
+            background: var(--color-bg-primary);
+            padding: var(--spacing-xs) 16px;
+            border-radius: var(--spacing-lg);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+        }
+        
+        /* Contenedor del mapa - responsive */
+        #mapContainer {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--color-bg-primary);
+            
+        }
+        
+        #map {
+            width: 95%;
+            height: 100%;
+            border-radius: var(--radius-lg);
+            cursor: crosshair;
+        }
+        
+        /* Aviso inicial */
+        #startNotice {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-bg-secondary);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        #startNotice h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-lg);
+        }
+        
+        #startNotice p {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+            font-size: var(--font-size-);
+        }
+        
+        #startNotice .device-icon {
+            font-size: 50px;
+            margin: var(--spacing-lg) 0;
+        }
+        
+        #closeNoticeBtn {
+            background: var(--color-primary);
+            color: white;
+            padding: 14px 32px;
+            margin-top: 25px;
+            font-size: var(--font-size-base);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        #closeNoticeBtn:hover {
+            background: var(--color-primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(242, 81, 22, 0.3);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Overlay oscuro */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+        }
+        
+        /* Barra de herramientas inferior minimalista */
+        #toolbar {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            padding: 10px;
+        }
+        
+        .tool-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn.undo .tool-icon {
+            background: var(--color-bg-primary);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+        }
+        
+        .tool-btn.undo:hover .tool-icon {
+            background: var(--color-text-secondary);
+            color: white;
+            border-color: var(--color-text-secondary);
+        }
+        
+        .tool-btn.clear .tool-icon {
+            background: var(--color-primary-bg);
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary-border);
+        }
+        
+        .tool-btn.clear:hover .tool-icon {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .tool-label {
+            font-size: var(--font-size-xxs);
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+        
+        .pac-container {
+            z-index: 1050;
+            font-family: var(--font-primary);
+            margin-top: 5px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--color-border);
+        }
+        
+        /* RESPONSIVE - TABLET (768px - 1024px) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            #mapContainer {
+                padding: var(--spacing-md);
+            }
+            
+            #map {
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-sm);
+            }
+            
+            #toolbar {
+                gap: 60px;
+            }
+        }
+        
+        /* RESPONSIVE - MOBILE (hasta 768px) */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: var(--font-size-lg);
+            }
+            
+            #searchContainer {
+                flex-direction: column;
+            }
+            
+            #startNotice {
+                max-width: 90%;
+                padding: 25px 25px;
+            }
+            
+            #toolbar {
+                gap: 40px;
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+            
+            .tool-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            /* Mapa no ocupa todo el ancho en móvil */
+            #mapContainer {
+                padding: var(--spacing-lg);
+            }
+            
+            #map {
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-md);
+                /* El mapa tendrá márgenes para permitir scroll */
+                max-width: 100%;
+                min-height: 400px;
+            }
+            
+            #area {
+                font-size: var(--font-size-lg);
+            }
+            
+            #statusBar {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                align-items: flex-start;
+            }
+        }
+        
+        /* RESPONSIVE - MOBILE PEQUEÑO (hasta 480px) */
+        @media (max-width: 480px) {
+            #header {
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+            
+             #startNotice {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-bg-secondary);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            text-align: center;
+            min-width: 90%;
+        }
+            
+            h1 {
+                font-size: var(--font-size-lg);
+            }
+            
+            #mapContainer {
+                padding: var(--spacing-md);
+            }
+            
+            #toolbar {
+                gap: 30px;
+                padding: var(--spacing-md);
+                border-color: #404040;
+                border-width: 2 px 0 0 0;
+            }
+            
+            .tool-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            
+            .tool-label {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay" class="hidden"></div>
+    
+    <div id="startNotice">
+        <h2>¡Bienvenido!</h2>
+        <div class="device-icon" id="deviceIcon">🖱️</div>
+        <p><strong>Para PC:</strong> Haz clic en el mapa para marcar cada esquina del techo. Arrastra los puntos para ajustarlos.</p>
+        <p><strong>Para Tablet/Móvil:</strong> Toca en el mapa para marcar cada punto. Mantén presionado y arrastra para ajustar.</p>
+        <p style="margin-top: 15px; font-size: 13px; color: #BDBDBD;">El cursor cambiará a una cruz (+) para indicar que puedes comenzar.</p>
+        <button id="closeNoticeBtn">Entendido, comenzar</button>
+    </div>
+    
+    <div id="header">
+        <h1>📐 Calculadora de Área de Techos</h1>
+        <div id="searchContainer">
+            <input 
+                type="text" 
+                id="addressInput" 
+                placeholder="Ingresa tu dirección completa (ej: Calle 60 #299, Centro, Mérida, Yucatán)"
+                autocomplete="off"
+            >
+            <button id="searchBtn">🔍 Buscar</button>
+        </div>
+        <div id="instructions">
+            Primero busca tu dirección, luego haz clic en las esquinas del techo. Puedes arrastrar los puntos para ajustarlos.
+        </div>
+    </div>
+    
+    <div id="statusBar">
+        <div id="result">
+            <span>Área:</span>
+            <span id="area">0 m²</span>
+        </div>
+        <div class="info-badge" id="pointCount">0 puntos</div>
+    </div>
+    
+    <div id="mapContainer">
+        <div id="map"></div>
+    </div>
+    
+    <div id="toolbar">
+        <button class="tool-btn undo" id="undoBtn">
+            <div class="tool-icon">↩️</div>
+            <span class="tool-label">Deshacer</span>
+        </button>
+        <button class="tool-btn clear" id="clearBtn">
+            <div class="tool-icon">🗑️</div>
+            <span class="tool-label">Limpiar</span>
+        </button>
+    </div>
+
+    <script>
+        let map;
+        let polygon;
+        let markers = [];
+        let points = [];
+        let geocoder;
+        let searchMarker;
+        let autocomplete;
+
+        function initMap() {
+            // Detectar dispositivo
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                document.getElementById('deviceIcon').textContent = '📱';
+            }
+            
+            // Mostrar aviso inicial
+            document.getElementById('overlay').classList.remove('hidden');
+            
+            // Inicializar geocoder
+            geocoder = new google.maps.Geocoder();
+            
+            // Inicializar autocompletado
+            const input = document.getElementById('addressInput');
+            autocomplete = new google.maps.places.Autocomplete(input, {
+                fields: ['geometry', 'name', 'formatted_address']
+            });
+            
+            // Cuando se selecciona una sugerencia
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                
+                if (!place.geometry) {
+                    alert('No se encontraron detalles para esta ubicación');
+                    return;
+                }
+                
+                // Centrar mapa en la ubicación
+                const location = place.geometry.location;
+                map.setCenter(location);
+                map.setZoom(20);
+                
+                // Eliminar marcador anterior si existe
+                if (searchMarker) {
+                    searchMarker.setMap(null);
+                }
+                
+                // Agregar marcador de ubicación
+                searchMarker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 8,
+                        fillColor: '#F25116',
+                        fillOpacity: 0.8,
+                        strokeColor: 'white',
+                        strokeWeight: 2
+                    },
+                    title: 'Ubicación seleccionada'
+                });
+            });
+            
+            // Inicializar mapa centrado en México
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 19,
+                center: { lat: 20.9674, lng: -89.6243 }, // Mérida, Yucatán
+                mapTypeId: 'satellite',
+                tilt: 0,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                }
+            });
+
+            // Inicializar polígono
+            polygon = new google.maps.Polygon({
+                strokeColor: '#F25116',
+                strokeOpacity: 0.8,
+                strokeWeight: 3,
+                fillColor: '#F25116',
+                fillOpacity: 0.35,
+                editable: false,
+                draggable: false
+            });
+            polygon.setMap(map);
+
+            // Evento de clic en el mapa
+            map.addListener('click', function(event) {
+                addPoint(event.latLng);
+            });
+
+            // Botones
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('undoBtn').addEventListener('click', undoLastPoint);
+            document.getElementById('searchBtn').addEventListener('click', searchAddress);
+            document.getElementById('closeNoticeBtn').addEventListener('click', closeNotice);
+            
+            // Buscar al presionar Enter
+            document.getElementById('addressInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchAddress();
+                }
+            });
+        }
+        
+        function closeNotice() {
+            document.getElementById('startNotice').classList.add('hidden');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+
+        function searchAddress() {
+            const address = document.getElementById('addressInput').value.trim();
+            
+            if (!address) {
+                alert('Por favor ingresa una dirección');
+                return;
+            }
+            
+            // Mostrar que está buscando
+            const btn = document.getElementById('searchBtn');
+            const originalText = btn.textContent;
+            btn.textContent = '🔄 Buscando...';
+            btn.disabled = true;
+            
+            geocoder.geocode({ address: address }, function(results, status) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                
+                if (status === 'OK') {
+                    const location = results[0].geometry.location;
+                    
+                    // Centrar mapa en la ubicación
+                    map.setCenter(location);
+                    map.setZoom(20);
+                    
+                    // Eliminar marcador anterior si existe
+                    if (searchMarker) {
+                        searchMarker.setMap(null);
+                    }
+                    
+                    // Agregar marcador de ubicación encontrada
+                    searchMarker = new google.maps.Marker({
+                        position: location,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: '#F25116',
+                            fillOpacity: 0.8,
+                            strokeColor: 'white',
+                            strokeWeight: 2
+                        },
+                        title: 'Ubicación encontrada'
+                    });
+                    
+                    // Mensaje de éxito
+                    alert('✅ Ubicación encontrada. Ahora puedes hacer clic en las esquinas del techo.');
+                } else {
+                    alert('❌ No se pudo encontrar la dirección. Intenta con una dirección más específica o verifica la ortografía.');
+                }
+            });
+        }
+
+        function addPoint(location) {
+            // Agregar marcador numerado y arrastrable
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                label: {
+                    text: (markers.length + 1).toString(),
+                    color: 'white',
+                    fontWeight: 'bold'
+                },
+                draggable: true, // Hacer el marcador arrastrable
+                animation: google.maps.Animation.DROP
+            });
+
+            const markerIndex = markers.length;
+            markers.push(marker);
+            points.push(location);
+
+            // Evento cuando se arrastra el marcador
+            marker.addListener('drag', function(event) {
+                // Actualizar la posición del punto en el array
+                points[markerIndex] = event.latLng;
+                
+                // Actualizar el polígono en tiempo real
+                polygon.setPath(points);
+                
+                // Recalcular área en tiempo real
+                calculateArea();
+            });
+            
+            // Evento cuando termina de arrastrar
+            marker.addListener('dragend', function(event) {
+                // Actualizar la posición final
+                points[markerIndex] = event.latLng;
+                polygon.setPath(points);
+                calculateArea();
+            });
+
+            // Actualizar polígono
+            polygon.setPath(points);
+
+            // Calcular área
+            calculateArea();
+            
+            // Actualizar contador de puntos
+            updatePointCount();
+        }
+
+        function calculateArea() {
+            if (points.length < 3) {
+                document.getElementById('area').textContent = '0 m²';
+                return;
+            }
+
+            // Calcular área usando la API de Google Maps
+            const area = google.maps.geometry.spherical.computeArea(points);
+            
+            // Mostrar resultado en metros cuadrados
+            document.getElementById('area').textContent = area.toFixed(2) + ' m²';
+        }
+
+        function clearAll() {
+            // Eliminar todos los marcadores de puntos
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            points = [];
+
+            // Limpiar polígono
+            polygon.setPath([]);
+
+            // Resetear área
+            document.getElementById('area').textContent = '0 m²';
+            
+            // Actualizar contador
+            updatePointCount();
+        }
+
+        function undoLastPoint() {
+            if (markers.length === 0) return;
+
+            // Eliminar último marcador
+            const lastMarker = markers.pop();
+            lastMarker.setMap(null);
+            points.pop();
+
+            // Actualizar polígono
+            polygon.setPath(points);
+
+            // Recalcular área
+            calculateArea();
+            
+            // Actualizar contador
+            updatePointCount();
+        }
+        
+        function updatePointCount() {
+            document.getElementById('pointCount').textContent = points.length + ' punto' + (points.length !== 1 ? 's' : '');
+        }
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTsPsx1FidRqGOp1zmLmfQkr_yqRsPns4&libraries=geometry,places&callback=initMap" async defer></script>
+</body>
+</html>
